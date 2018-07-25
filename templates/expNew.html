@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!--Change the title-->
+        <title>PRMexperiment</title>
+        
+        <!--jsPsych necessities start-->
+        <script src="../static/js/jsPsych-6.0.3/jspsych.js"></script>
+        <script src="../static/js/pest.js"></script>
+        <link href="../static/js/jsPsych-6.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+        <!--jsPsych necessities end-->
+        
+        <!--jsPsych plugins start-->
+        <!--//////////////////|\\\\\\\\\\\\\\\\\\-->
+        <!--//     Your jsPsych plugins here    \\-->
+        
+        
+        <script src="../static/js/jsPsych-6.0.3/plugins/jspsych-html-keyboard-response.js"></script> 
+        <script src="../static/js/jsPsych-6.0.3/plugins/jspsych-RDK.js"></script>
+        <script src="../static/js/jsPsych-6.0.3/plugins/jspsych-text.js"></script>
+        <script src="../static/js/jsPsych-6.0.3/plugins/jspsych-instructions.js"></script>        
+        
+        
+        <!--\\                                 //-->
+        <!--\\\\\\\\\\\\\\\\\\|//////////////////-->           
+        <!--jsPsych plugins end-->
+        
+        <!--PsiTurk inserts start-->
+        <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="../static/lib/underscore-min.js" type="text/javascript"> </script>
+        <script src="../static/lib/backbone-min.js" type="text/javascript"> </script>
+        <script src="../static/lib/d3.v3.min.js" type="text/javascript"> </script>
+        <!-- These variables are necessary to implement psiTurk -->
+        <script type="text/javascript">
+            // These fields provided by the psiTurk Server
+            var uniqueId = "{{ uniqueId }}"; // a unique string identifying the worker/task
+            var adServerLoc = "{{ adServerLoc }}"; // the location of your ad (so you can send user back at end of experiment)
+            var mode = "{{ mode }}"; // is this running live, sandbox, or in debug mode?
+        </script>
+        <!-- utils.js and psiturk.js provide the basic psiturk functionality -->
+        <script src="../static/js/utils.js" type="text/javascript"></script>
+        <script src="../static/js/psiturk.js" type="text/javascript"></script>
+        <!--PsiTurk inserts end-->
+    </head>
+    <body>
+    </body>
+    <script>
+    
+        //Data switches
+        var psiTurkIsOn = 0;   // 0: Test locally.  1: Test/Run on psiTurk
+        var savingLocally = 1; // 0: Nothing.       1: Download CSV file
+        var displayData = 1;   // 0: Nothing.       1: Display data on browser
+        var username = 'odegaard';     // Username for psiturk server
+        var tableName = 'Perceptual Reality Monitoring';    // MySQL Table Name 
+        var folderName = 'PRM';   // Folder containing the experiment
+        
+        
+        // Load psiturk
+        if (psiTurkIsOn){
+          var psiturk = new PsiTurk(uniqueId, adServerLoc, mode);
+        } 
+        
+        ///////////////////////////////////////////////////////////////
+        //-----------------Your code below this line-----------------//
+
+			/* Jason's browser exclusion code so subjects only use Google Chrome */
+	function getBrowserInfo() 
+		{ 
+	        var ua = navigator.userAgent, tem, 
+	        M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || []; 
+	        if(/trident/i.test(M[1])) 
+	        { 
+	                tem=  /\brv[ :]+(\d+)/g.exec(ua) || []; 
+	                return 'IE '+(tem[1] || ''); 
+	        } 
+	        if(M[1]=== 'Chrome') 
+	        { 
+	                tem= ua.match(/\b(OPR|Edge)\/(\d+)/); 
+	                if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera'); 
+	        } 
+	        M = M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?']; 
+	        if((tem= ua.match(/version\/(\d+)/i))!= null) 
+	                M.splice(1, 1, tem[1]); 
+	        return { 'browser': M[0], 'version': M[1] }; 
+		} 
+		
+	var browserInfo = getBrowserInfo(); 
+	if(browserInfo.browser !== 'Chrome') 
+		{ 
+		Message = "This experiment only has support for Google Chrome. Please reopen the experiment in Google Chrome."
+	        var wrong_browser = 
+	        { 
+	                //type: 'text', 
+	                //text: '<p>This experiment only has support for Google Chrome.</p>' 
+	                //         +'<p>Please reopen the experiment in Google Chrome.</p>', 
+	            type: 'html-keyboard-response',
+				stimulus: [
+					'<p style="font-size: 26px;">' + Message + '</p>'
+					],
+			    choices: jsPsych.NO_KEYS,
+	        }; 
+	        jsPsych.init({ 
+	                //experiment_structure: [wrong_browser], 
+	                timeline: [wrong_browser]
+	        }); 
+		} 
+	else
+		//This open bracket gets closed at the very end of the file!  
+		{
+			
+	// declaring all the global variables
+	var main_timeline = [];
+	
+	var fixation = {
+		type: "RDK",
+		coherent_direction: 0,
+		coherence: 0,
+		dot_color: "white",
+		correct_choice: "",
+		background_color: "white",
+		trial_duration: 500,
+		data: {trial_type: fixation},
+		fixation_cross: true,
+		data: {descriptive_trial_type: "fixation"}
+	};
+	
+	//Trial parameters
+		mov=1;
+		dotcol="black";
+		bgcol="white";
+		fix_col="black";
+		framer=30;
+		dur12=1000;
+		durTarget=300; //length of time target is presented for
+	
+		totalDelayTime = 2000;
+	var	onset; //changed later
+	
+	
+	//instructions for AB task
+	instructionsAB();	
+	
+	//do AB practice
+	practiceAB();
+	
+	//instructions for coherence task
+	instructionsCoherence();
+	
+	//do coherence practice
+	practiceCoherence();
+	
+	//final round of instructions
+	finalInstructions();
+	
+	//do final practice
+	experiment(practice=true);
+	
+	//start experiment
+	experiment(practice=false);	
+	
+	} //This bracket is for the else from Jason's code to exclude browsers other than chrome
+	
+	
+	/////////////////////////////////////////////////////////////////////////////////
+	//Functions//
+	/////////////////////////////////////////////////////////////////////////////////
+	
+	function randcoh(){
+		return Math.floor(Math.random()*2)*corrdir
+		};
+		
+	function correctresponseCoh(rdk3_coherence){
+		if (rdk3_coherence==0){
+			return "n"
+		    } else {
+		    	return "y"
+		    }};
+		    
+	function correctresponseAB(rdk4coherent_direction, corrdirArray, counter){
+		if (rdk4coherent_direction[0]==corrdirArray[counter-1]){
+			return "a"
+		    } else {
+		    	return "b"
+		    }};
+		    
+	//This function gets the text for feedback
+	function getText(correct, correct_answer){
+		var text = correct_answer.toString() + ' was the correct answer'
+		if (correct==true){
+			text = 'Great job! ' + text;
+			
+		} else	{
+			text = 'Incorrect. ' + text;	
+		};
+		return text;
+	};
+	
+	//This function pushes everything we need for the experiment to the main_timeline. If practice is true, then it gives feedback everytime	    
+	function experiment(practice){
+	var cong=1;
+	var congMessage;
+	var rdk3_coherence;
+	var rdk4coherent_direction = [];
+		    
+	//Coherence Pest Setup
+	
+	//Variables for 3 Down / 1 Up
+	var downThreshold = 3; // 3 Down
+	var upThreshold = 1; // 1 Up
+	var upperCoherenceLimit = 1.0;
+	var lowerCoherenceLimit = 0.0000000001; //Practically 0, but cannot set to 0 because JavaScript evaluates it as false in the RDK plugin
+	var correctStreakCounter = 0;
+	var incorrectStreakCounter = 0;
+	var startCoh=0.7;
+	
+	var currcoh = startCoh; //keeps track of current value in coherence staircase
+		
+	//Variables for PEST
+	var currentStepSize1 = 0.32; //Global variable to hold the current step size
+	var minimumStepSize1 = 0.01; //Smallest step size
+	var maximumStepSize1 = 0.32; //Largest step size
+	
+	//Create the parameter object for PEST
+	var pestParameters = {
+		starting_intensity: startCoh,
+		down_threshold: downThreshold,
+		up_threshold: upThreshold,
+		upper_intensity_limit: upperCoherenceLimit,
+		lower_intensity_limit: lowerCoherenceLimit,
+		starting_step_size: currentStepSize1,
+		min_step_size: minimumStepSize1,
+		max_step_size: maximumStepSize1
+	};
+	
+	var mypestCoh = new pest(pestParameters);
+	
+	//Variables for 3 Down / 1 Up
+	var downThreshold = 3; // 3 Down
+	var upThreshold = 1; // 1 Up
+	var upperDifferenceLimit = 180.0;
+	var lowerDifferenceLimit = 0.1;
+	var correctStreakCounter = 0;
+	var incorrectStreakCounter = 0;
+	var startAngle=90.0;
+	
+	var currAngle = startAngle; //keeps track of current value in angle staircase
+		
+	//Variables for PEST
+	var currentStepSize2 = 30.0; //Global variable to hold the current step size
+	var minimumStepSize2 = 0.01; //Smallest step size
+	var maximumStepSize2 = 30.0; //Largest step size
+	
+	//Create the parameter object for PEST
+	var pestParameters = {
+		starting_intensity: startAngle,
+		down_threshold: downThreshold,
+		up_threshold: upThreshold,
+		upper_intensity_limit: upperDifferenceLimit,
+		lower_intensity_limit: lowerDifferenceLimit,
+		starting_step_size: currentStepSize2,
+		min_step_size: minimumStepSize2,
+		max_step_size: maximumStepSize2
+	};
+	
+	var mypestAngle = new pest(pestParameters);
+	
+	var numblocks = 2;
+	var blocksize = 2;
+	var corrdirArray = [];
+	var counter=0;
+	
+	if (practice){
+		numblocks=30; //how many chances they get to make cap in a row
+		blocksize=1; //so keeps changing in practice rounds
+		var streak = 0; //keeps track of correct answers in a row
+		var cap = 4; //when this many correct trials in a row, end practice session. double number correct runs
+	};
+		
+	for	(j=0; j<numblocks; j++){
+	cong=Math.floor(Math.random()*2)
+	
+	var borderColor;
+	
+	var correct;
+	var correct_choice;
+	
+	if (cong==1 && practice){
+		congMessage = "If there is coherent motion during the delay, it will be in the same direction as remembered target (matched)"
+		Stimulus = '<p style="font-size: 36px; color:blue;">' + congMessage + '</p>'
+		borderColor='blue'
+	}
+	else if (cong!=1 && practice){
+		congMessage = "If there is coherent motion during the delay, it will NOT be in the same direction as remembered target (unmatched)"
+		Stimulus = '<p style="font-size: 36px; color:green;">' + congMessage + '</p>'
+		borderColor='green'
+	}
+	else if (cong==1 && !practice){
+		congMessage = "If there is coherent motion during the delay, it will be in the same direction as remembered target (matched) for the next "
+		Stimulus = '<p style="font-size: 36px; color:blue;">' + congMessage + blocksize.toString() + ' blocks' + '</p>'
+		borderColor='blue'
+	}
+	else{
+		congMessage = "If there is coherent motion during the delay, it will be in the same direction as remembered target (unmatched) for the next "
+		Stimulus = '<p style="font-size: 36px; color:blue;">' + congMessage + blocksize.toString() + ' blocks' + '</p>'
+		borderColor='green'
+	};
+	
+	var disp_congruence = {
+				type: 'html-keyboard-response',
+				stimulus: [
+					Stimulus
+					],
+			    choices: jsPsych.NO_KEYS,
+			    trial_duration: 5000,
+			    data: {descriptive_trial_type: "disp_congruence", duration: dur12, practice: practice}
+			};
+
+	if (!practice){main_timeline.push(disp_congruence);};
+	
+	
+	for (i=0; i<blocksize; i++) {
+
+	
+			corrdir = Math.floor(Math.random()*360);
+			corrdirArray.push(corrdir);
+
+			//initialize params which will contain all the variables per trial
+				
+			mem = Math.floor(Math.random()*2)+1;
+			//mem=1;
+			
+			//set which memory trial we're going for
+			if (mem==1){
+				dir1 = corrdir;
+				dir2 = (dir1 + 45 + Math.floor(Math.random()*270))%360;
+			} else {
+				dir2 = corrdir;
+				dir1 = (dir2 + 45 + Math.floor(Math.random()*270))%360;
+			};
+			
+			
+			//set direction3
+			// on congruent trials it's same as corrdir, 
+			//on incongruent trials it's randomized at least 90 degrees away from corrdir
+			//staircase difference later
+			if (cong==0) {
+				dir3=(corrdir+45+Math.floor(Math.random()*270))%360;	
+			} else {
+				dir3=corrdir
+			};
+			
+			var rdk1 = {
+				type: "RDK",
+				coherent_direction: dir1,
+				coherence: 1,
+				move_distance: mov,
+				trial_duration: dur12,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				//data: {trial_type: "rdk1"},
+				move_distance: 1,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk1", block_num: j, run_num: i, duration: dur12, practice: practice}
+			};
+			
+			var rdk2 = {
+				type: "RDK",
+				coherent_direction: dir2, 
+				coherence: 1,
+				move_distance: 1,
+				trial_duration: dur12,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk2", block_num: j, run_num: i, duration: dur12, practice: practice},
+			};
+			
+
+			var disp_mem = {
+				type: "RDK",
+			    text_center: mem.toString(),
+			    number_of_dots: 0,
+			    background_color: bgcol,
+				trial_duration: 1000,
+				aperture_type: 3,
+				border: true,
+				border_thickness: 15,
+				border_color: borderColor,
+			    data: {descriptive_trial_type: "disp_mem", block_num: j, run_num: i, remember: mem.toString(), duration: 1000, practice: practice},
+			};
+			
+			//for embedding target in delay
+			onset = Math.floor(Math.random()*(1/2*totalDelayTime-durTarget)+totalDelayTime/4); //generates random number between 500 and 1200 for onset of target
+			//when total DelayTime is 2000 and durTarget is 300, produces a number between 500 and 1200
+			
+			var rdk25 = {
+				type: "RDK",
+				coherent_direction: 0, 
+				coherence: 0,
+				move_distance: mov,
+				trial_duration: onset,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				block_congruent: cong==1,
+				data: {descriptive_trial_type: "rdk25", block_num: j, run_num: i, duration: onset, practice: practice},		
+			};			
+			
+			var rdk3 = {
+				type: "RDK",
+				coherent_direction: dir3, 
+				coherence: function(){	
+					rdk3_coherence = Math.floor(Math.random()*2)*currcoh; //either 0 or currcoh //determining whether or not its coherent;
+					return rdk3_coherence;},
+				move_distance: mov,
+				trial_duration: durTarget,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				block_congruent: cong==1,
+				data: {descriptive_trial_type: "rdk3", block_num: j, run_num: i, duration: durTarget, practice: practice},
+			};
+			
+			dur35 = totalDelayTime - onset - durTarget;
+			var rdk35 = {
+				type: "RDK",
+				coherent_direction: 0, 
+				coherence: 0,
+				move_distance: mov,
+				trial_duration: dur35,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				block_congruent: cong==1,
+				data: {descriptive_trial_type: "rdk35", block_num: j, run_num: i, duration: dur35, practice: practice},		
+			};
+					
+			var qcoh = {
+				type: 'html-keyboard-response',
+				stimulus: [
+					'Was there any coherent motion in the previous trial? <p> (Press Y or N for Yes or No)'
+					],
+			    choices: ["y","n"],
+			    data: {descriptive_trial_type: "qcoh", block_num: j, run_num: i, practice: practice},
+			    data: {block_congruent: cong==1},
+				on_finish: function(data){
+					//correct response has to be dynamically changed because whether coherence is 0 or currcoh is dynamically changed
+					jsPsych.data.get().addToLast({correct_response: correctresponseCoh(rdk3_coherence)});
+					data.response=jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press)
+					data.correct = data.response==data.correct_response
+					correct=data.correct;
+					if (practice){if (correct){streak++;} else {streak=0;};};
+					console.log("correct: "+correct);
+					console.log("streak: "+streak);
+					correct_choice=data.correct_response;
+					currcoh = mypestCoh.staircase(data.correct);					
+					}
+			    }
+			    
+			if (practice){		    
+				var feedback = {
+    				type: 'instructions',
+    				pages: function(){
+    					return [getText(correct, correct_choice)]},
+					show_clickable_nav: true,
+					data: {descriptive_trial_type: "feedback", block_num: j, run_num: i, practice: practice}
+				};
+			};
+		
+			 var rdk4 = {
+				type: "RDK",
+				number_of_apertures: 2,
+				choices: ["a","b"],
+				data: {descriptive_trial_type: "rdk4", block_num: j, run_num: i, practice: practice},
+				//making function so staircasing will be easier later
+				coherent_direction: function(){
+					console.log("counter = " + counter);			
+					aCorrect = (Math.random()<0.5) //deterimines whether a will be correct answer or not
+					plus = (Math.random()<0.5) //determining + or - in angle difference
+					c = corrdirArray[counter]
+					if (aCorrect && plus) {
+						rdk4coherent_direction=[c,(c+currAngle)%360]
+		   			} else if (aCorrect && !plus) {
+		    			rdk4coherent_direction=[c,(c-currAngle)%360]
+		   			} else if (!aCorrect && plus) {
+		    			rdk4coherent_direction=[(c+currAngle)%360,c]
+		   			} else {
+		    			rdk4coherent_direction=[(c-currAngle)%360,c]
+		   			};
+		   			counter++;		
+					return rdk4coherent_direction;
+					},
+				coherence: 1,
+				move_distance: mov,
+				trial_duration: 10000,
+				RDK_type: 3,
+				aperture_type: 1,
+   				aperture_width: window.innerWidth/3,
+				dot_color: dotcol,
+				background_color: bgcol,
+				aperture_center_x: [window.innerWidth/4,window.innerWidth*3/4],
+				text_above: "Please select the stimulus matching the correct one to be memorized",
+				text_below_one: "a", 
+				text_below_two: "b",
+				fixation_cross: false,
+				on_finish: function(data){
+					jsPsych.data.get().addToLast({correct_response: correctresponseAB(rdk4coherent_direction, corrdirArray, counter)});
+					data.response=jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press);
+					data.correct = data.response==data.correct_response;
+					correct=data.correct;
+					if (practice){if (correct){streak++;} else {streak=0;};};
+					correct_choice=data.correct_response;
+					console.log("correct: "+correct);
+					console.log("streak: "+streak);
+					currAngle = mypestAngle.staircase(data.correct);
+					}
+			    }
+			    
+			if (practice){		    
+				var feedback2 = {
+    				type: 'instructions',
+    				pages: function(){
+    					return [getText(correct, correct_choice)]},
+					show_clickable_nav: true,
+					data: {descriptive_trial_type: "feedback", block_num: j, run_num: i, practice: practice}
+				};
+			};
+			
+			var qconf = {
+				type: 'html-keyboard-response',
+				stimulus: [
+					'How confident are you? <p> (Press 1 for confident and 2 for unsure)'
+					],
+			    choices: ["1", "2"],
+			    data: {descriptive_trial_type: "qconf", block_num: j, run_num: i, practice: practice},
+				on_finish: function(data){
+					data.response=jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press)	
+					}
+			    }
+			 
+			if (!practice){   
+			main_timeline.push(fixation);
+ 			main_timeline.push(rdk1);
+ 			main_timeline.push(fixation);
+ 			main_timeline.push(rdk2);
+ 			main_timeline.push(fixation);
+ 			main_timeline.push(disp_mem);
+ 			main_timeline.push(fixation);
+ 			main_timeline.push(rdk25);
+			main_timeline.push(rdk3);
+			main_timeline.push(rdk35);		
+			main_timeline.push(qcoh);
+			//if (practice){main_timeline.push(feedback);}	
+			main_timeline.push(fixation);
+ 			main_timeline.push(rdk4);
+ 			main_timeline.push(qconf);
+ 			//if (practice){main_timeline.push(feedback2);}
+ 			}
+ 			//practice
+ 			else {
+ 				var if_node = {
+   			 	timeline: [disp_congruence, fixation, rdk1, fixation, rdk2, fixation, disp_mem, fixation, rdk25, rdk3, rdk35, qcoh, feedback, fixation, rdk4, qconf, feedback2],
+    		 	conditional_function: function(){
+        			if(streak<cap){
+           			 	return true;
+    		    	} else {
+      	      			return false;
+        			};
+    			}
+			};
+			
+				main_timeline.push(if_node);		
+ 			};
+ 						
+	
+	}//end trial generation
+}//end congruent/incongruent block loop alternation	
+
+
+//Just for use with Turk. Later add if using mTurk thing
+if (psiTurkIsOn){
+	if (practice){			
+// 		Kill the experiment
+ 		if (streak<cap){
+            jsPsych.endExperiment("Thank you for participating! <br/> Your responses in practice make you ineligible to continue. <br/> Please email <b>ucrneuralcomputation@gmail.com</b> with your WorkerID to receive partial compensation.");
+            };
+            };
+            };
+		
+		var lastInst = {
+    		type: 'instructions',
+    		pages: [
+       			'Excellent! Thank you so much for your attention. Now you can begin the experiment.'
+    		],
+    		show_clickable_nav: true
+			};
+		main_timeline.push(lastInst);
+	
+	};//end function
+	
+	//This function pushes everything we need for the instructions for the AB task to the main_timeline
+	function instructionsAB(){
+	
+		dir1=170;
+		dir2=85;
+		mem=2;
+		correct=false;
+		correct_answer='a';
+	
+		var inst1 = {
+    		type: 'instructions',
+    		pages: [
+       			'Welcome to the experiment. Click next to begin.',
+        		'We start with instructions, and then a practice period. Instructions begin on the next page.',
+        		'First, you will see a pattern of dots all moving in the same direction.'
+    		],
+    		show_clickable_nav: true
+			};
+		
+		var rdk1 = {
+				type: "RDK",
+				coherent_direction: dir1,
+				coherence: 1,
+				move_distance: mov,
+				trial_duration: dur12,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk1", duration: dur12}
+			};
+			
+		var inst2 = {
+    		type: 'instructions',
+    		pages: [
+       			'Then, you will see another pattern of dots all moving together but in a different direction. Try to remember the direction.'
+    		],
+    		show_clickable_nav: true
+			};
+			
+		var rdk2 = {
+				type: "RDK",
+				coherent_direction: dir2,
+				coherence: 1,
+				move_distance: mov,
+				trial_duration: dur12,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk2", duration: dur12}
+			};
+			
+		var inst3 = {
+    		type: 'instructions',
+    		pages: [
+       			'Then, you will be told which direction to remember. A "1" indicates that you should remember the first direciton. A "2" indicates that you should remember the second direction.'
+    		],
+    		show_clickable_nav: true
+			};
+			
+		var disp_mem = {
+				type: "RDK",
+			    text_center: mem.toString(),
+			    number_of_dots: 0,
+			    background_color: bgcol,
+				trial_duration: 1000,
+			    data: {descriptive_trial_type: "disp_mem", remember: mem.toString(), duration: 1000},
+			};
+		
+		var inst4 = {
+    		type: 'instructions',
+    		pages: [
+       			'The "2" means you should remember the second direction.',
+       			'Then there will be a delay, which we will explain later.',
+       			'After the delay, you should choose the option that best matches the direction of motion that you are remembering. Use the a and b keys on your keyboard.'
+    		],
+    		show_clickable_nav: true
+			};
+			
+		var rdk4 = {
+				type: "RDK",
+				number_of_apertures: 2,
+				choices: ["a","b"],
+				coherent_direction: [85,350],
+				coherence: 1,
+				move_distance: mov,
+				trial_duration: 10000,
+				RDK_type: 3,
+				aperture_type: 1,
+   				aperture_width: window.innerWidth/3,
+				dot_color: dotcol,
+				background_color: bgcol,
+				aperture_center_x: [window.innerWidth/4,window.innerWidth*3/4],
+				text_above: "Please select the stimulus matching the correct one to be memorized",
+				text_below_one: "a", 
+				text_below_two: "b",
+				fixation_cross: false,
+				on_finish: function(data){
+					data.response=jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press);
+					correct = data.response==correct_answer;
+					console.log("correct1 = ",correct);
+					}
+			    };
+			    
+		var feedback = {
+    		type: 'instructions',
+    		pages: function(){
+    			return [getText(correct, correct_answer)]},
+			show_clickable_nav: true
+			};
+		
+		main_timeline.push(inst1);
+		main_timeline.push(rdk1);
+		main_timeline.push(inst2);
+		main_timeline.push(rdk2);
+		main_timeline.push(inst3);
+		main_timeline.push(disp_mem);
+		main_timeline.push(inst4);
+		main_timeline.push(rdk4);
+		main_timeline.push(feedback);
+		
+	};
+	
+	//This function pushes everything we need for the practice for the AB task to the main_timeline
+	function practiceAB(){
+	
+		var inst1 = {
+    		type: 'instructions',
+    		pages: [
+       			'Now you will get a chance to practice.'
+    		],
+    		show_clickable_nav: true
+			};
+			
+		main_timeline.push(inst1);
+			
+		var streak = 0; //keeps track of correct answers in a row
+		var cap = 2; //when this many correct trials in a row, end practice session
+		var cuttoff=30; //how many chances they get to make 5 in a row
+		
+		var i;
+		var counter=0;
+		var corrdirArray=[];
+		for (i = 0; i < cuttoff; i++) { 
+		
+			corrdir = Math.floor(Math.random()*360);
+			corrdirArray.push(corrdir);
+
+			//initialize params which will contain all the variables per trial
+				
+			mem = Math.floor(Math.random()*2)+1;//mem is 1 or 2
+			//mem=1;
+			
+			//set which memory trial we're going for
+			if (mem==1){
+				dir1 = corrdir;
+				dir2 = (corrdir + 45 + Math.floor(Math.random()*270))%360;
+			} else {
+				dir2 = corrdir;
+				dir1 = (corrdir + 45 + Math.floor(Math.random()*270))%360;
+			};
+		
+		console.log("corrdir " +corrdir)
+		console.log("dir1 " +dir1)
+		console.log("dir2 " +dir2)
+		
+			var rdk1 = {
+				type: "RDK",
+				coherent_direction: dir1,
+				coherence: 1,
+				move_distance: mov,
+				trial_duration: dur12,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk1", duration: dur12}
+			};
+			
+			var rdk2 = {
+				type: "RDK",
+				coherent_direction: dir2, 
+				coherence: 1,
+				move_distance: 1,
+				trial_duration: dur12,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk2", duration: dur12},
+			};
+			
+			var disp_mem = {
+				type: "RDK",
+			    text_center: mem.toString(),
+			    number_of_dots: 0,
+			    background_color: bgcol,
+				trial_duration: 1000,
+			    data: {descriptive_trial_type: "disp_mem", remember: mem.toString(), duration: 1000},
+			};
+			
+			var rdk4 = {
+				type: "RDK",
+				number_of_apertures: 2,
+				choices: ["a","b"],
+				data: {descriptive_trial_type: "rdk4"},
+				//making function so staircasing will be easier later
+				coherent_direction: function(){
+					currAngle=Math.floor(Math.random()*270+45);
+					console.log("counter = " + counter);			
+					aCorrect = (Math.random()<0.5) //deterimines whether a will be correct answer or not
+					c = corrdirArray[counter]
+					if (aCorrect) {
+						rdk4coherent_direction=[c,(c+currAngle)%360]
+		   			} else {
+		    			rdk4coherent_direction=[(c+currAngle)%360,c]
+		   			};
+		   			counter++;	
+		   			console.log('rdk4coherent_direction ' + rdk4coherent_direction)		
+					return rdk4coherent_direction;
+					},
+				coherence: 1,
+				move_distance: mov,
+				trial_duration: 10000,
+				RDK_type: 3,
+				aperture_type: 1,
+   				aperture_width: window.innerWidth/3,
+				dot_color: dotcol,
+				background_color: bgcol,
+				aperture_center_x: [window.innerWidth/4,window.innerWidth*3/4],
+				text_above: "Please select the stimulus matching the correct one to be memorized",
+				text_below_one: "a", 
+				text_below_two: "b",
+				fixation_cross: false,
+				on_finish: function(data){
+					correct_response = correctresponseAB(rdk4coherent_direction, corrdirArray, counter);
+					data.response=jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press);
+					correct = data.response==correct_response;
+					
+					if (correct==true) {
+						streak++;
+					}
+					else {
+						streak=0;
+					};
+					
+					console.log("correct: "+correct);
+					console.log("streak: "+streak);
+					}
+			    };
+			    
+			var feedback = {
+    			type: 'instructions',
+    			pages: function(){
+    				return [getText(correct, correct_response)]},
+				show_clickable_nav: true
+			};
+		
+		var if_node = {
+   			 timeline: [fixation, rdk1, fixation, rdk2, fixation, disp_mem, fixation, rdk4, feedback],
+    		 conditional_function: function(){
+        		if(streak<cap){
+           		 	return true;
+    		    } else {
+      	      		return false;
+        		};
+    		}
+		};
+			
+		main_timeline.push(if_node);
+		};
+
+//Just for use with Turk. Later add if using mTurk thing		
+// 		Kill the experiment
+	if (psiTurkIsOn){
+ 		if (streak<cap){
+           jsPsych.endExperiment("Thank you for participating! <br/> Your responses in practice make you ineligible to continue. <br/> Please email <b>ucrneuralcomputation@gmail.com</b> with your WorkerID to receive partial compensation.");
+            };
+        };
+		
+		var inst2 = {
+    		type: 'instructions',
+    		pages: [
+       			'Excellent! Now we will ask you how confident you are in your answer. There is no correct answer to the confidence question.'
+    		],
+    		show_clickable_nav: true
+			};
+		main_timeline.push(inst2);
+		
+			corrdir = Math.floor(Math.random()*360);
+
+			//initialize params which will contain all the variables per trial
+				
+			mem = Math.floor(Math.random()*2)+1;
+			//mem=1;
+			
+			//set which memory trial we're going for
+			if (mem==1){
+				dir1 = corrdir;
+				dir2 = (corrdir + 45 + Math.floor(Math.random()*270))%360;
+			} else {
+				dir2 = corrdir;
+				dir1 = (corrdir + 45 + Math.floor(Math.random()*270))%360;
+			};
+		
+			var rdk1 = {
+				type: "RDK",
+				coherent_direction: dir1,
+				coherence: 1,
+				move_distance: mov,
+				trial_duration: dur12,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk1", duration: dur12}
+			};
+			
+			var rdk2 = {
+				type: "RDK",
+				coherent_direction: dir2, 
+				coherence: 1,
+				move_distance: 1,
+				trial_duration: dur12,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk2", duration: dur12},
+			};
+			
+			var disp_mem = {
+				type: "RDK",
+			    text_center: mem.toString(),
+			    number_of_dots: 0,
+			    background_color: bgcol,
+				trial_duration: 1000,
+			    data: {descriptive_trial_type: "disp_mem", remember: mem.toString(), duration: 1000},
+			};
+			
+			var rdk4 = {
+				type: "RDK",
+				number_of_apertures: 2,
+				choices: ["a","b"],
+				data: {descriptive_trial_type: "rdk4"},
+				//making function so staircasing will be easier later
+				coherent_direction: function(){
+					currAngle=Math.floor(Math.random()*270+45);
+					console.log("counter = " + counter);			
+					aCorrect = (Math.random()<0.5) //deterimines whether a will be correct answer or not
+					plus = (Math.random()<0.5) //determining + or - in angle difference
+					c = corrdir;
+					if (aCorrect && plus) {
+						rdk4coherent_direction=[c,(c+currAngle)%360]
+		   			} else if (aCorrect && !plus) {
+		    			rdk4coherent_direction=[c,(c-currAngle)%360]
+		   			} else if (!aCorrect && plus) {
+		    			rdk4coherent_direction=[(c+currAngle)%360,c]
+		   			} else {
+		    			rdk4coherent_direction=[(c-currAngle)%360,c]
+		   			};
+		   			counter++;			
+					return rdk4coherent_direction;
+					},
+				coherence: 1,
+				move_distance: mov,
+				trial_duration: 10000,
+				RDK_type: 3,
+				aperture_type: 1,
+   				aperture_width: window.innerWidth/3,
+				dot_color: dotcol,
+				background_color: bgcol,
+				aperture_center_x: [window.innerWidth/4,window.innerWidth*3/4],
+				text_above: "Please select the stimulus matching the correct one to be memorized",
+				text_below_one: "a", 
+				text_below_two: "b",
+				fixation_cross: false,
+				on_finish: function(data){
+					correct_response = correctresponseAB(rdk4coherent_direction, corrdirArray, counter);
+					data.response=jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press);
+					correct = data.response==correct_response;
+					
+					if (correct==true) {
+						streak++;
+					}
+					else {
+						streak=0;
+					};
+					
+					console.log("correct: "+correct);
+					console.log("streak: "+streak);
+					}
+			    };
+			    
+			var qconf = {
+				type: 'html-keyboard-response',
+				stimulus: [
+					'How confident are you? <p> (Press 1 for confident and 2 for unsure)'
+					],
+			    choices: ["1", "2"],
+			    data: {descriptive_trial_type: "qconf"},
+				on_finish: function(data){
+					data.response=jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press)	
+					}
+			    };
+			    
+			var inst3 = {
+    		type: 'instructions',
+    		pages: [
+       			'Great! Now we will move on to the next section.'
+    		],
+    		show_clickable_nav: true
+			};
+			
+			main_timeline.push(fixation);
+			main_timeline.push(rdk1);
+			main_timeline.push(fixation);
+			main_timeline.push(rdk2);
+			main_timeline.push(fixation);
+			main_timeline.push(disp_mem);
+			main_timeline.push(rdk4);
+			main_timeline.push(qconf);
+			main_timeline.push(inst3);
+	};
+	
+	//Function createInstructionsCoherence pushes everything we need for instructions for the AB task
+	function instructionsCoherence(){
+	
+	var inst1 = {
+    		type: 'instructions',
+    		pages: [
+       			'Now we explain the rest of the task.',
+       			'Between seeing the number "1" or "2" and making the choice between a and b, there will be a delay. During that delay, you will see randomly moving dots.',
+       			'Sometimes, in the middle of the delay, some of the dots will move in the same direction. We call that coherent motion.',
+       			'Your job is to tell if there was any coherent motion or not.',
+       			'Next is an example with coherent motion. Some of the dots will move in the same direction very briefly. Pay attention -- the coherent motion will be so brief it will be hard to see!'
+    		],
+    		show_clickable_nav: true
+			};
+			
+	onset=1000;
+			
+	var rdk25 = {
+				type: "RDK",
+				coherent_direction: 0, 
+				coherence: 0,
+				move_distance: mov,
+				trial_duration: onset,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk25", duration: onset},		
+			}			
+			
+			var rdk3 = {
+				type: "RDK",
+				coherent_direction: 70, 
+				coherence: 0.7,
+				move_distance: mov,
+				trial_duration: durTarget,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk3", duration: durTarget},
+			}
+			
+			dur35 = totalDelayTime - onset - durTarget;
+			var rdk35 = {
+				type: "RDK",
+				coherent_direction: 0, 
+				coherence: 0,
+				move_distance: mov,
+				trial_duration: dur35,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk35", duration: dur35},		
+			}
+	
+	main_timeline.push(inst1);
+	main_timeline.push(rdk25);
+	main_timeline.push(rdk3);
+	main_timeline.push(rdk35);
+			
+	var inst2 = {
+    		type: 'instructions',
+    		pages: [
+    			'Next is an example without coherent motion. The dots will all move randomly.'  			
+    		],
+    		show_clickable_nav: true
+			};
+			
+	var rdk25 = {
+				type: "RDK",
+				coherent_direction: 0, 
+				coherence: 0,
+				move_distance: mov,
+				trial_duration: onset,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk25", duration: onset},		
+			}			
+			
+			var rdk3 = {
+				type: "RDK",
+				coherent_direction: 70, 
+				coherence: 0,
+				move_distance: mov,
+				trial_duration: durTarget,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk3", duration: durTarget},
+			}
+			
+			dur35 = totalDelayTime - onset - durTarget;
+			var rdk35 = {
+				type: "RDK",
+				coherent_direction: 0, 
+				coherence: 0,
+				move_distance: mov,
+				trial_duration: dur35,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk35", duration: dur35},		
+			}
+			
+	main_timeline.push(inst2);
+	main_timeline.push(rdk25);
+	main_timeline.push(rdk3);
+	main_timeline.push(rdk35);
+			
+	var inst3 = {
+    		type: 'instructions',
+    		pages: [
+    			'You will be asked if there was any coherent motion .'  			
+    		],
+    		show_clickable_nav: true
+			};
+			
+			var qcoh = {
+				type: 'html-keyboard-response',
+				stimulus: [
+					'Was there any coherent motion in the previous trial? <p> (Press Y or N for Yes or No)'
+					],
+			    choices: ["y","n"],
+			    data: {descriptive_trial_type: "qcoh"},
+			    }
+	main_timeline.push(inst3);
+	main_timeline.push(qcoh);
+	
+	};
+	
+	//This function pushes everything we need for the practice for the Coherence task to the main_timeline
+	function practiceCoherence(){
+		var inst1 = {
+    		type: 'instructions',
+    		pages: [
+       			'Now you will get a chance to practice.'
+    		],
+    		show_clickable_nav: true
+			};		
+		main_timeline.push(inst1);
+			
+		var streak = 0; //keeps track of correct answers in a row
+		var cap = 5; //when this many correct trials in a row, end practice session
+		var cuttoff=30; //how many chances they get to make 5 in a row
+		
+		var i;
+		for (i = 0; i < cuttoff; i++) { 
+		
+		//for embedding target in delay
+			onset = Math.floor(Math.random()*(1/2*totalDelayTime-durTarget)+totalDelayTime/4); //generates random number between 500 and 1200 for onset of target
+			//when total DelayTime is 2000 and durTarget is 300, produces a number between 500 and 1200
+			
+			var rdk25 = {
+				type: "RDK",
+				coherent_direction: 0, 
+				coherence: 0,
+				move_distance: mov,
+				trial_duration: onset,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk25", duration: onset},		
+			};			
+			
+			var dir3=Math.floor(Math.random()*360);
+			var rdk3 = {
+				type: "RDK",
+				coherent_direction: dir3, 
+				coherence: function(){	
+					rdk3_coherence = Math.floor(Math.random()*2)*(0.6*Math.random()+0.4); //either 0 or random number between 0.4 and 1
+					return rdk3_coherence;},
+				move_distance: mov,
+				trial_duration: durTarget,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk3", duration: durTarget},
+			};
+			
+			dur35 = totalDelayTime - onset - durTarget;
+			var rdk35 = {
+				type: "RDK",
+				coherent_direction: 0, 
+				coherence: 0,
+				move_distance: mov,
+				trial_duration: dur35,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk35", duration: dur35},		
+			};
+			
+			var qcoh = {
+				type: 'html-keyboard-response',
+				stimulus: [
+					'Was there any coherent motion in the previous trial? <p> (Press Y or N for Yes or No)'
+					],
+			    choices: ["y","n"],
+			    data: {descriptive_trial_type: "qcoh"},
+				on_finish: function(data){
+					//correct response has to be dynamically changed because whether coherence is 0 or currcoh is dynamically changed
+					//jsPsych.data.get().addToLast({correct_response: correctresponseCoh(rdk3_coherence)});
+					data.response=jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press);
+					correct_choice = correctresponseCoh(rdk3_coherence);
+					console.log("correct_choice: "+correct_choice);
+					correct = data.response==correct_choice;
+					if (correct==true) {
+						streak++;
+					}
+					else {
+						streak=0;
+					};
+					
+					console.log("correct: "+correct);
+					console.log("streak: "+streak);
+					}		
+					};
+
+			    
+			var feedback = {
+    			type: 'instructions',
+    			pages: function(){
+    				return [getText(correct, correct_choice)]},
+				show_clickable_nav: true
+			};
+			
+			var if_node = {
+   			 timeline: [fixation, rdk25, rdk3, rdk35, qcoh, feedback],
+    		 conditional_function: function(){
+        		if(streak<cap){
+           		 	return true;
+    		    } else {
+      	      		return false;
+        		};
+    		}
+			};// end if_node
+			
+		main_timeline.push(if_node);
+		
+		};//end for loop
+		
+		//Just for use with Turk. Later add if using mTurk thing
+		if (psiTurkIsOn){		
+// 		Kill the experiment
+ 		if (streak<cap){
+            jsPsych.endExperiment("Thank you for participating! <br/> Your responses in practice make you ineligible to continue. <br/> Please email <b>ucrneuralcomputation@gmail.com</b> with your WorkerID to receive partial compensation.");
+            };
+		};
+		};
+		
+	//This function pushes everything we need to give an example of a matched of unmatched block. If matched==true, does a matched block. Otherwise, unmatched.
+	function exampleBlock(matched){
+	
+	if (matched){
+		congMessage = "If there is coherent motion during the delay, it will be in the same direction as remembered target (matched)"
+		Stimulus = '<p style="font-size: 36px; color:blue;">' + congMessage + '</p>';
+		borderColor='blue';
+		}
+	else{
+		congMessage = "If there is coherent motion during the delay, it will NOT be in the same direction as remembered target (unmatched)"
+		Stimulus = '<p style="font-size: 36px; color:green;">' + congMessage + '</p>';
+		borderColor='green';
+	};
+		var disp_congruence = {
+				type: 'html-keyboard-response',
+				stimulus: [
+					Stimulus
+					],
+			    choices: jsPsych.NO_KEYS,
+			    trial_duration: 5000,
+			};
+		
+		mem=2;
+		corrdir=50;
+		
+			var rdk1 = {
+				type: "RDK",
+				coherent_direction: 150,
+				coherence: 1,
+				move_distance: mov,
+				trial_duration: dur12,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk1", duration: dur12}
+			};
+			
+			var rdk2 = {
+				type: "RDK",
+				coherent_direction: corrdir, 
+				coherence: 1,
+				move_distance: 1,
+				trial_duration: dur12,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk2", duration: dur12},
+			};
+			
+
+			var disp_mem = {
+				type: "RDK",
+			    text_center: mem.toString(),
+			    number_of_dots: 0,
+			    background_color: bgcol,
+				trial_duration: 1000,
+				aperture_type: 3,
+				border: true,
+				border_thickness: 15,
+				border_color: borderColor,
+			    data: {descriptive_trial_type: "disp_mem", remember: mem.toString(), duration: 1000},
+			};
+			
+			//for embedding target in delay
+			onset = Math.floor(Math.random()*(1/2*totalDelayTime-durTarget)+totalDelayTime/4); //generates random number between 500 and 1200 for onset of target
+			//when total DelayTime is 2000 and durTarget is 300, produces a number between 500 and 1200
+			
+			var rdk25 = {
+				type: "RDK",
+				coherent_direction: 0, 
+				coherence: 0,
+				move_distance: mov,
+				trial_duration: onset,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk25", duration: onset},		
+			};			
+			
+			var dir3;
+			if (matched){
+				dir3=corrdir;
+			} else{
+				dir3=300;
+			}
+			
+			var rdk3 = {
+				type: "RDK",
+				coherent_direction: dir3, 
+				coherence: 0.8,
+				move_distance: mov,
+				trial_duration: durTarget,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk3", duration: durTarget},
+			};
+			
+			dur35 = totalDelayTime - onset - durTarget;
+			var rdk35 = {
+				type: "RDK",
+				coherent_direction: 0, 
+				coherence: 0,
+				move_distance: mov,
+				trial_duration: dur35,
+				RDK_type: 3,
+				aperture_type: 1,
+				dot_color: dotcol,
+				background_color: bgcol,
+				fixation_cross: true,
+				data: {descriptive_trial_type: "rdk35", duration: dur35},		
+			};
+			
+			main_timeline.push(disp_congruence);
+			main_timeline.push(fixation);
+			main_timeline.push(rdk1);
+			main_timeline.push(fixation);
+			main_timeline.push(rdk2);
+			main_timeline.push(fixation);
+			main_timeline.push(disp_mem);
+			main_timeline.push(fixation);
+			main_timeline.push(rdk25);
+			main_timeline.push(rdk3);
+			main_timeline.push(rdk35);
+	};
+		
+	//This function pushes everything we need for the instructions for the final practice	
+	function finalInstructions(){
+		var inst1 = {
+    		type: 'instructions',
+    		pages: [
+       			'Excellent! Now we will put together everything you have practiced. You are almost done with practice!',
+       			'The direction of coherent motion during the delay will sometimes match the direction of motion that you are trying to remember. That is called a matched block. Here is what we mean:'
+    		],
+    		show_clickable_nav: true
+			};
+		main_timeline.push(inst1);
+		
+		exampleBlock(matched=true);
+		
+		var inst2 = {
+    		type: 'instructions',
+    		pages: [
+       			'The direction of coherent motion during the delay matched the direction you were supposed to remember.',
+       			'We will tell you ahead of time whether coherent motion during the delay will be matched.',
+       			'Messages will be color-coded to help indicate whether any coherent motion will be matched or unmatched.',
+       			'<p style="color:blue;"> Blue means matched. </p>',
+       			'<p style="color:green;"> Green means unmatched. </p>'
+       			],
+    		show_clickable_nav: true
+			};
+			
+		congMessage = "If there is coherent motion during the delay, it will be in the same direction as remembered target (matched)";
+		Stimulus = '<p style="font-size: 36px; color:blue;">' + congMessage + '</p>';
+		
+		var disp_congruence1 = {
+				type: 'html-keyboard-response',
+				stimulus: [
+					Stimulus
+					],
+			    choices: jsPsych.NO_KEYS,
+			    trial_duration: 5000,
+			};
+			
+		congMessage = "If there is coherent motion during the delay, it will NOT be in the same direction as remembered target (unmatched)";
+		Stimulus = '<p style="font-size: 36px; color:green;">' + congMessage + '</p>';
+			
+		var disp_congruence2 = {
+				type: 'html-keyboard-response',
+				stimulus: [
+					Stimulus
+					],
+			    choices: jsPsych.NO_KEYS,
+			    trial_duration: 5000,
+			};
+		
+		main_timeline.push(inst2);
+		main_timeline.push(disp_congruence1);
+		main_timeline.push(disp_congruence2);
+		
+		var inst3 = {
+    		type: 'instructions',
+    		pages: [
+       			'The color of the border is another reminder.'
+       			],
+    		show_clickable_nav: true
+			};
+	
+		var disp_mem1 = {
+				type: "RDK",
+			    text_center: mem.toString(),
+			    number_of_dots: 0,
+			    background_color: bgcol,
+				trial_duration: 1000,
+				aperture_type: 3,
+				border: true,
+				border_thickness: 15,
+				border_color: 'blue',
+			    data: {descriptive_trial_type: "disp_mem", remember: mem.toString(), duration: 1000},
+			};
+			
+		var disp_mem2 = {
+				type: "RDK",
+			    text_center: mem.toString(),
+			    number_of_dots: 0,
+			    background_color: bgcol,
+				trial_duration: 1000,
+				aperture_type: 3,
+				border: true,
+				border_thickness: 15,
+				border_color: 'green',
+			    data: {descriptive_trial_type: "disp_mem", remember: mem.toString(), duration: 1000},
+			};
+			
+		var inst4 = {
+    		type: 'instructions',
+    		pages: [
+       			'Here is an example of an unmatched block.'
+       			],
+    		show_clickable_nav: true
+			};
+			
+		main_timeline.push(inst3);
+		main_timeline.push(disp_mem1);
+		main_timeline.push(disp_mem2);	
+		main_timeline.push(inst4);
+		
+		exampleBlock(matched=false);
+		
+		var inst5 = {
+    		type: 'instructions',
+    		pages: [
+       			'Now you get to practice! When you get three in a row right, you get to move on to the experiment!'
+       			],
+    		show_clickable_nav: true
+			};
+		main_timeline.push(inst5);
+	};
+
+        
+        //-----------------Your code above this line-----------------//
+        ///////////////////////////////////////////////////////////////
+
+
+        //---------Run the experiment---------
+    
+        //Initiate the experiment
+        jsPsych.init({
+          timeline: main_timeline,
+          on_finish: function(){ //Execute this when the experiment finishes
+            if(savingLocally){
+              jsPsych.data.get().localSave('csv','testSave.csv'); //Save the data locally in a .csv file
+            }
+            if(displayData){
+              jsPsych.data.displayData(); //Display the data onto the browser screen
+            }
+            if(psiTurkIsOn){
+              psiturk.saveData({ 
+                success: function(){
+                  psiturk.completeHIT(); //Complete the HIT
+                }
+              });
+            }
+          },
+          on_trial_finish: function(){ //Execute this after every trial
+            if (psiTurkIsOn){
+              save_data(tableName, [jsPsych.data.get().last(1).values()[0]]);
+            }
+          }
+        });
+
+        
+        //------psiTurk Functions Begin------
+    
+        //A function to save the data to the SQL table on the psiturk server.  This gets called at the end of the file.
+        function save_data(data_table,data){
+          
+          //Retrieve data from psiTurk and add to jsPsych data 
+          jsPsych.data.addProperties(
+            {
+              workerId: psiturk.taskdata.get('workerId'),
+              assignmentId: psiturk.taskdata.get('assignmentId'),
+              hitId: psiturk.taskdata.get('hitId') 
+            }
+          );
+          
+          //Use AJAX to post the data onto the psiturk server
+          $.ajax({
+            type:'post',
+            cache: false,
+            url: 'https://psiturk.psych.ucla.edu/~' + username + '/' + folderName + '/templates/savedata.php',
+            data: {
+              table: data_table,
+              json: JSON.stringify(data),
+            },
+            success: function(output) { console.log(output); } // write the result to javascript console
+          });
+        }      
+        //------psiTurk Functions End------
+
+
+
+    </script>
+</html>
