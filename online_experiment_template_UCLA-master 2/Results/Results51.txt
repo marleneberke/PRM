@@ -1,0 +1,36 @@
+Results
+
+Total number of subjects: 51
+Number of subjects who meet inclusion criteria: 37
+
+Detection task results 
+Mean Hit Rate: 0.910216
+Mean Hit Rate Congruent: 0.939584
+Mean Hit Rate Congruent Remember 1: 0.949516
+Mean Hit Rate Congruent Remember 2: 0.928335
+Mean Hit Rate Inongruent: 0.880986
+Mean Hit Rate Incongruent Remember 1: 0.888148
+Mean Hit Rate Incongruent Remember 2: 0.878065
+Mean False Alarm Rate: 0.085171
+Mean False Alarm Rate Congruent: 0.070479
+Mean False Alarm Rate Congruent Remember 1: 0.070479
+Mean False Alarm Rate Congruent Remember 2: 0.070479
+Mean False Alarm Rate Incongruent: 0.097727
+Mean D-Prime: 2.505384
+Mean D-Prime Congruent: 2.614535
+Mean D-Prime Incongruent: 2.217987
+P-value for Paired T-test on Hit Rate (Congruent vs Incongruent): 0.000487
+P-value for Paired T-test on Hit Rate (Congruent Remember 2 vs Incongruent): 0.023829
+P-value for Paired T-test on False Alarm Rate: 0.088448
+
+Memory task results 
+Mean Hit Rate: 0.921247
+Mean Hit Rate Congruent: 0.934421
+Mean Hit Rate Inongruent: 0.908977
+Mean False Alarm Rate: 0.079109
+Mean False Alarm Rate Congruent: 0.072329
+Mean False Alarm Rate Incongruent: 0.085866
+Mean D-Prime: 2.847362
+Mean D-Prime Congruent: 2.191500
+Mean D-Prime Incongruent: 2.439968
+Mean Meta-D-Prime: 2.729091
