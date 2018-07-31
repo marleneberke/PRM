@@ -4,29 +4,32 @@
 % based on the descriptive_trial_type. 
 %It also takes a boolean variable called congruent for which condition to look at.
 
+%new version
+
 
 function graphAveStaircase(AllWorkers, descriptive_trial_type,congruent)
-    %array that stores the toPlots for each subject
-    stair=zeros(99999,1);
+
+    toPlot=NaN(length(AllWorkers),60);
     
-    %keep track of minimum length of the toPlots
-    min=inf;
 
     for i=1:length(AllWorkers)
         
         d=AllWorkers{i};        
         idx = returnIndicesIntersect(d.descriptive_trial_type, descriptive_trial_type, d.practice, 0, d.block_congruent,congruent);
-        coh=d.coherence(idx);
-        toPlot=coh(coh~=0);
+        %think something fishy happens on incongruent where congruent_block
+        %is defaulted to 0
+        if length(idx) > 60 
+            idx=idx(end-59:end);
+        end
         
-        if length(toPlot) < min
-            min=length(toPlot);
-        end  
-        
-        stair=stair(1:min)+toPlot(1:min);
+        if length(idx)==60
+            coh=d.coherence(idx);
+            coh(coh==0)=NaN;
+            toPlot(i,:)=coh(coh~=0);    
+        end     
     end
     
-    stair=stair/length(AllWorkers);
+    stair=nanmean(toPlot);
     
     %setting ylabel
     if strcmp(descriptive_trial_type,'rdk3')

@@ -1,3 +1,5 @@
+Staircasing on detection task, not on memory task
+
 Results
 
 Total number of subjects: 57

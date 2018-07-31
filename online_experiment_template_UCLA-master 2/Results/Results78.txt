@@ -1,0 +1,36 @@
+Results from July 26 launch. Options A and B during memory task match directions 1 and 2. No stair casing on memory task. Yes stair casing on coherence level.
+
+Total number of subjects: 78
+Number of subjects who meet inclusion criteria: 56
+
+Detection task results 
+Mean Hit Rate: 0.799327
+Mean Hit Rate Congruent: 0.804455
+Mean Hit Rate Congruent Remember 1: 0.818486
+Mean Hit Rate Congruent Remember 2: 0.797342
+Mean Hit Rate Incongruent: 0.794439
+Mean Hit Rate Incongruent Remember 1: 0.813001
+Mean Hit Rate Incongruent Remember 2: 0.782983
+Mean False Alarm Rate: 0.106818
+Mean False Alarm Rate Congruent: 0.091759
+Mean False Alarm Rate Congruent Remember 1: 0.091759
+Mean False Alarm Rate Congruent Remember 2: 0.091759
+Mean False Alarm Rate Incongruent: 0.124393
+Mean D-Prime: 2.098788
+Mean D-Prime Congruent: 2.056860
+Mean D-Prime Incongruent: 1.957459
+P-value for Paired T-test on Hit Rate (Congruent vs Incongruent): 0.341849
+P-value for Paired T-test on Hit Rate (Congruent Remember 2 vs Incongruent): 0.149050
+P-value for Paired T-test on False Alarm Rate: 0.037027
+
+Memory task results 
+Mean Hit Rate: 0.964931
+Mean Hit Rate Congruent: 0.975674
+Mean Hit Rate Incongruent: 0.953848
+Mean False Alarm Rate: 0.043982
+Mean False Alarm Rate Congruent: 0.035409
+Mean False Alarm Rate Incongruent: 0.054018
+Mean D-Prime: 3.130870
+Mean D-Prime Congruent: 2.947839
+Mean D-Prime Incongruent: 2.565331
+Mean Meta-D-Prime: 2.202800

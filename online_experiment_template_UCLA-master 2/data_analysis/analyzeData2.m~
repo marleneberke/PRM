@@ -6,7 +6,7 @@ clear;
 close all;
 
 % Create a path to the text file with all the subjects
-path='subjects57.txt';
+path='subjects.txt';
 % Make an ID for the subject list file
 subjectListFileId=fopen(path);
 % Read in the number from the subject list
@@ -84,7 +84,7 @@ for i = 1:numberOfSubjects
     AllWorkers{i}=d;
     
     %how much practice she did
-     numPractice(i)=length(returnIndicesIntersect(d.practice, 1, d.descriptive_trial_type, 'rdk4'));
+     %numPractice(i)=length(returnIndicesIntersect(d.practice, 1, d.descriptive_trial_type, 'rdk4'));
 %     disp(['Number of rounds of practice ' num2str(numPrac)])
     
     
@@ -110,7 +110,6 @@ for i = 1:numberOfSubjects
       %toPlotCongMem = graphStaircase(d,'rdk4','angle', 1,i);
       %toPlotInCongMem = graphStaircase(d,'rdk4','angle', 0,i);
      
-% 
      id= returnIndicesIntersect(d.descriptive_trial_type, 'rdk4', d.practice, 0);%looking at rdk4 now
      %only use last 120 entries
      id=id(end+1-numTrials:end);
@@ -251,6 +250,14 @@ fprintf(fileID,'Mean Meta-D-Prime: %f\n',avgMetadPMem);
 
 
 fclose(fileID);
+
+%for bonusing purposes
+fileID2 = fopen('Bonusing.txt','w');
+fprintf(fileID2, 'Assignment ids of people to bonus');
+for i=1:length(toBonusAssignmentId)
+    fprintf(fileID2,'%s\n',toBonusAssignmentId{i});
+end
+fclose(fileID2);
 
 
 
