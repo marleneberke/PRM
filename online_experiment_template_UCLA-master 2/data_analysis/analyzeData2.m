@@ -46,6 +46,9 @@ faRatesInCongDet2=zeros(1,numberOfSubjects);
 dPDet=zeros(1,numberOfSubjects);
 dPCongDet=zeros(1,numberOfSubjects);
 dPInCongDet=zeros(1,numberOfSubjects);
+cDet=zeros(1,numberOfSubjects);
+cCongDet=zeros(1,numberOfSubjects);
+cInCongDet=zeros(1,numberOfSubjects);
 
 %for memory task
 hitRatesMem=zeros(1,numberOfSubjects);
@@ -66,6 +69,13 @@ dPMem=zeros(1,numberOfSubjects);
 dPCongMem=zeros(1,numberOfSubjects);
 dPInCongMem=zeros(1,numberOfSubjects);
 metadPMem=zeros(1,numberOfSubjects);
+cMem=zeros(1,numberOfSubjects);
+cCongMem=zeros(1,numberOfSubjects);
+cInCongMem=zeros(1,numberOfSubjects);
+
+%correct rate on mem task when coherence is during delay
+correctRateCong=zeros(1,numberOfSubjects);
+correctRateInCong=zeros(1,numberOfSubjects);
 
 
 % For loop that loops through all the subjects
@@ -101,7 +111,7 @@ for i = 1:numberOfSubjects
        index=index(end+1-numTrials:end);
        %copying remember data
        d.remember(index)=d.remember(index-5);
-       [hitRatesDet(i), hitRatesCongDet(i), hitRatesCongDet1(i), hitRatesCongDet2(i), hitRatesInCongDet(i), hitRatesInCongDet1(i), hitRatesInCongDet2(i), faRatesDet(i), faRatesCongDet(i), faRatesCongDet1(i), faRatesCongDet2(i), faRatesInCongDet(i), faRatesInCongDet1(i), faRatesInCongDet2(i), dPDet(i), dPCongDet(i), dPInCongDet(i)] = sdAnalyze(d,index,'y','n',false);
+       [hitRatesDet(i), hitRatesCongDet(i), hitRatesCongDet1(i), hitRatesCongDet2(i), hitRatesInCongDet(i), hitRatesInCongDet1(i), hitRatesInCongDet2(i), faRatesDet(i), faRatesCongDet(i), faRatesCongDet1(i), faRatesCongDet2(i), faRatesInCongDet(i), faRatesInCongDet1(i), faRatesInCongDet2(i), dPDet(i), dPCongDet(i), dPInCongDet(i), cDet(i), cCongDet(i), cInCongDet(i)] = sdAnalyze(d,index,'y','n',false);
 
 %     %turning to AB part
 %      disp('AB task')
@@ -121,7 +131,11 @@ for i = 1:numberOfSubjects
      d.correct_response(idConf)=d.correct_response(id);
      %copying remember data
      d.remember(id)=d.remember(id-7);
-     [hitRatesMem(i), hitRatesCongMem(i), hitRatesCongMem1(i), hitRatesCongMem2(i), hitRatesInCongMem(i), hitRatesInCongMem1(i), hitRatesInCongMem2(i), faRatesMem(i), faRatesCongMem(i), faRatesCongMem1(i), faRatesCongMem2(i), faRatesInCongMem(i), faRatesInCongMem1(i), faRatesInCongMem2(i), dPMem(i), dPCongMem(i), dPInCongMem(i), metadPMem(i) ] = sdAnalyze(d,id,'a','b',true,idConf,2);
+     [hitRatesMem(i), hitRatesCongMem(i), hitRatesCongMem1(i), hitRatesCongMem2(i), hitRatesInCongMem(i), hitRatesInCongMem1(i), hitRatesInCongMem2(i), faRatesMem(i), faRatesCongMem(i), faRatesCongMem1(i), faRatesCongMem2(i), faRatesInCongMem(i), faRatesInCongMem1(i), faRatesInCongMem2(i), dPMem(i), dPCongMem(i), dPInCongMem(i), cMem(i), cCongMem(i), cInCongMem(i), metadPMem(i) ] = sdAnalyze(d,id,'a','b',true,idConf,2);
+     
+     %looking for differences in correct rates on memory task when no
+     %coherent motion during delay
+     [correctRateCong(i), correctRateInCong(i)] = correctRateMem(d);
 
      
      %who to bonus?
@@ -198,10 +212,11 @@ forStaircase=cell([1,length(goodSubjects)]);
 for i=1:length(goodSubjects)
     forStaircase{i}=AllWorkers{i};
 end
-%for detection task congruent condition
-graphAveStaircase(forStaircase,'rdk3',1);
-%for detection task incongruent condition
-graphAveStaircase(forStaircase,'rdk3',0);
+%for detection task
+graphAveStaircase(forStaircase,'rdk3');
+graphAveStaircaseOld(forStaircase,'rdk3');
+graphAveStaircase(forStaircase,'rdk4');
+
 %for memory task congruent condition
 %graphAveStaircase(forStaircase,'rdk4','angle',1);
 %for memory task incongruent condition
@@ -253,9 +268,9 @@ fclose(fileID);
 
 %for bonusing purposes
 fileID2 = fopen('Bonusing.txt','w');
-fprintf(fileID2, 'Assignment ids of people to bonus \n');
+fprintf(fileID2, 'WorkerID,AssignmentID \n');
 for i=1:length(toBonusAssignmentId)
-    fprintf(fileID2,'%s\n',toBonusAssignmentId{i});
+    fprintf(fileID2,'%s,%s\n',toBonusWorkerId{i},toBonusAssignmentId{i});
 end
 fclose(fileID2);
 
@@ -282,19 +297,23 @@ title(['Mean Hit and False Alarm Rates by Congruence Condition, n=' num2str(leng
 hold off;
 
 
-%look at congruency effect and meta-d'
+%look at difference in false alarm rates congruent and incongruent trials and
+%see if it correlates with meta-d'
 congruencyEffects=faRatesCongDet-faRatesInCongDet;
+
+%look at difference in criteria bias c on congruent and incongruent trials and
+%see if it correlates with meta-d'
+congruencyEffects=cCongDet-cInCongDet;
+
+betterSubjects=goodSubjects(metadPMem(goodSubjects)>0);
+
+%metadP
 [r,p]=corrcoef(congruencyEffects(goodSubjects),metadPMem(goodSubjects),'Rows','complete');
+%log(metadP/d')
+graphCongruencyEffect(congruencyEffects(betterSubjects),log(metadPMem(betterSubjects)./dPMem(betterSubjects)));
 
-figure;
-hold on;
-scatter(congruencyEffects(goodSubjects),metadPMem(goodSubjects))
-xlabel("Congruency Effect")
-ylabel("Meta d' on Memory Task")
-%title(['Correlation coefficient is ' num2str(r)])
-hold off;
-
-r2=corrcoef(congruencyEffects(goodSubjects),abs(metadPMem(goodSubjects)),'Rows','complete');
+forCorr=betterSubjects(~isinf(congruencyEffects(betterSubjects)));
+[r2,p]=corrcoef(congruencyEffects(forCorr),log(metadPMem(forCorr)./dPMem(forCorr)),'Rows','complete');
 
 
 

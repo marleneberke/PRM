@@ -1,36 +1,36 @@
 Results
 
-Total number of subjects: 78
-Number of subjects who meet inclusion criteria: 56
+Total number of subjects: 86
+Number of subjects who meet inclusion criteria: 59
 
 Detection task results 
-Mean Hit Rate: 0.799327
-Mean Hit Rate Congruent: 0.804455
-Mean Hit Rate Congruent Remember 1: 0.818486
-Mean Hit Rate Congruent Remember 2: 0.797342
-Mean Hit Rate Incongruent: 0.794439
-Mean Hit Rate Incongruent Remember 1: 0.813001
-Mean Hit Rate Incongruent Remember 2: 0.782983
-Mean False Alarm Rate: 0.106818
-Mean False Alarm Rate Congruent: 0.091759
-Mean False Alarm Rate Congruent Remember 1: 0.091759
-Mean False Alarm Rate Congruent Remember 2: 0.091759
-Mean False Alarm Rate Incongruent: 0.124393
-Mean D-Prime: 2.098788
-Mean D-Prime Congruent: 2.056860
-Mean D-Prime Incongruent: 1.957459
-P-value for Paired T-test on Hit Rate (Congruent vs Incongruent): 0.341849
-P-value for Paired T-test on Hit Rate (Congruent Remember 2 vs Incongruent): 0.149050
-P-value for Paired T-test on False Alarm Rate: 0.037027
+Mean Hit Rate: 0.806967
+Mean Hit Rate Congruent: 0.813144
+Mean Hit Rate Congruent Remember 1: 0.799466
+Mean Hit Rate Congruent Remember 2: 0.817038
+Mean Hit Rate Incongruent: 0.801642
+Mean Hit Rate Incongruent Remember 1: 0.796990
+Mean Hit Rate Incongruent Remember 2: 0.807383
+Mean False Alarm Rate: 0.140178
+Mean False Alarm Rate Congruent: 0.121856
+Mean False Alarm Rate Congruent Remember 1: 0.121856
+Mean False Alarm Rate Congruent Remember 2: 0.121856
+Mean False Alarm Rate Incongruent: 0.159138
+Mean D-Prime: 2.023069
+Mean D-Prime Congruent: 2.029445
+Mean D-Prime Incongruent: 1.854638
+P-value for Paired T-test on Hit Rate (Congruent vs Incongruent): 0.231036
+P-value for Paired T-test on Hit Rate (Congruent Remember 2 vs Incongruent): 0.085958
+P-value for Paired T-test on False Alarm Rate: 0.027883
 
 Memory task results 
-Mean Hit Rate: 0.964931
-Mean Hit Rate Congruent: 0.975674
-Mean Hit Rate Incongruent: 0.953848
-Mean False Alarm Rate: 0.043982
-Mean False Alarm Rate Congruent: 0.035409
-Mean False Alarm Rate Incongruent: 0.054018
-Mean D-Prime: 3.130870
-Mean D-Prime Congruent: 2.947839
-Mean D-Prime Incongruent: 2.565331
-Mean Meta-D-Prime: 2.202800
+Mean Hit Rate: 0.831566
+Mean Hit Rate Congruent: 0.824999
+Mean Hit Rate Incongruent: 0.836216
+Mean False Alarm Rate: 0.211468
+Mean False Alarm Rate Congruent: 0.220753
+Mean False Alarm Rate Incongruent: 0.201570
+Mean D-Prime: 1.804514
+Mean D-Prime Congruent: 1.785924
+Mean D-Prime Incongruent: 1.902238
+Mean Meta-D-Prime: 1.212203

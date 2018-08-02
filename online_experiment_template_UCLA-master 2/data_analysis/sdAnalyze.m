@@ -1,4 +1,4 @@
-% This function prints the hit rates and false alarm rates broken up by
+                   % This function prints the hit rates and false alarm rates broken up by
 % congruence level. It requires a dataStructure with fields response,
 % correct_response, and block_congruent. The second argument is the indices
 % of the trials we want to analyze. It is an array. The last inputs are the
@@ -7,7 +7,7 @@
 % or not to do meta-d' analysis. confOptions is an int for the number of
 % confidence options (if confidence is rated 1-5, then confOptions is 5).
 
-function [hitRate, hitRateCong, hitRateCong1, hitRateCong2, hitRateInCong, hitRateInCong1, hitRateInCong2, faRate, faRateCong, faRateCong1, faRateCong2, faRateInCong, faRateInCong1, faRateInCong2, dPrime, dPrimeCong, dPrimeInCong, metadP]=sdAnalyze(dataStructure, index, positive, negative, calcMetadPrime, confIndex, confOptions)
+function [hitRate, hitRateCong, hitRateCong1, hitRateCong2, hitRateInCong, hitRateInCong1, hitRateInCong2, faRate, faRateCong, faRateCong1, faRateCong2, faRateInCong, faRateInCong1, faRateInCong2, dPrime, dPrimeCong, dPrimeInCong, c, cCong, cInCong, metadP]=sdAnalyze(dataStructure, index, positive, negative, calcMetadPrime, confIndex, confOptions)
     d=dataStructure;
     
 % %     %correct stats
@@ -71,6 +71,11 @@ function [hitRate, hitRateCong, hitRateCong1, hitRateCong2, hitRateInCong, hitRa
     %disp(['In matched condition, dPrime is ' num2str(dPrimeCong)])
     dPrimeInCong=norminv(hitRateInCong)-norminv(faRateInCong);
     %disp(['In unmatched condition, dPrime is ' num2str(dPrimeInCong)])
+    
+    %c
+    c=-0.5*(norminv(hitRate)+norminv(faRate));
+    cCong=-0.5*(norminv(hitRateCong)+norminv(faRateCong));
+    cInCong=-0.5*(norminv(hitRateInCong)+norminv(faRateInCong));
     
     if calcMetadPrime
         %getting different confidence levels assuming confidence is
