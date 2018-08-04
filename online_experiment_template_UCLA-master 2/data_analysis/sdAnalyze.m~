@@ -62,15 +62,9 @@ function [hitRate, hitRateCong, hitRateCong1, hitRateCong2, hitRateInCong, hitRa
 %     faRateInCong1=faInCong1/length(returnIndicesIntersect(d.correct_response(index),negative, d.block_congruent(index), 0, d.remember(index),1));
 %     faInCong2=length(returnIndicesIntersect(d.correct(index),0,d.correct_response(index),negative,d.block_congruent(index), 0, d.remember(index),2));
 %     faRateInCong2=faInCong2/length(returnIndicesIntersect(d.correct_response(index),negative, d.block_congruent(index), 0, d.remember(index),2));
-
-    %for when congruent and incongruent conditions have the same false
-    %alarm rates
-    faRateCong=faRate;
-    faRateCong1=NaN;
-    faRateCong2=NaN;
-    faRateInCong=faRate;
-    faRateInCong1=NaN;
-    faRateInCong2=NaN;
+    faRateCong1=faRate;
+    faRateCong2=faRate;
+    faRateInCong1=faRate;
     
     %d'
     dPrime=norminv(hitRate)-norminv(faRate);

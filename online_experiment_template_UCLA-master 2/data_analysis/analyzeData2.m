@@ -151,8 +151,8 @@ for i = 1:numberOfSubjects
 
      
      %Keep track of subjects who meet inclusion criteria
-     if hitRatesDet(i) > 0.6 && faRatesDet(i) < 0.4 && hitRatesDet(i) < 0.9 && hitRatesMem(i) > 0.6 && faRatesMem(i) < 0.4
-     %if true
+     %if hitRatesDet(i) > 0.6 && faRatesDet(i) < 0.4 && hitRatesDet(i) < 0.9 && hitRatesMem(i) > 0.6 && faRatesMem(i) < 0.4
+     if hitRatesDet(i) > 0.6 && faRatesDet(i)>0.05 && faRatesDet(i)<0.4 &&  hitRatesMem(i) > 0.6 && hitRatesMem(i)<0.9 && faRatesMem(i) < 0.4
         goodSubjects(end+1)=i;
      end
      
@@ -213,8 +213,11 @@ for i=1:length(goodSubjects)
     forStaircase{i}=AllWorkers{i};
 end
 %for detection task
-graphAveStaircase(forStaircase,'rdk3');
-graphAveStaircaseOld(forStaircase,'rdk3');
+%graphAveStaircase(forStaircase,'rdk3');
+%graphAveStaircaseOld(forStaircase,'rdk3');
+
+
+%for memory task
 graphAveStaircase(forStaircase,'rdk4');
 
 %for memory task congruent condition

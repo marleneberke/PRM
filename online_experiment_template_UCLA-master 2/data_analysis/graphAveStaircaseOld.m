@@ -8,6 +8,11 @@
 
 
 function graphAveStaircaseOld(AllWorkers, descriptive_trial_type)
+    %set parameter number of practice trials
+    numPractice=5; %usually 5
+    %set parameter number of trials of each condition
+    numTrialsEach=40; %usually 60
+
     %array that stores the toPlots for each subject
     stair0=zeros(99999,1);
     stair1=zeros(99999,1);
@@ -24,15 +29,14 @@ function graphAveStaircaseOld(AllWorkers, descriptive_trial_type)
         %congruent
         idx1 = returnIndicesIntersect(d.descriptive_trial_type, descriptive_trial_type, d.block_congruent,1);
         
-        %add 5 to 60 since there are 5 practice trials
         %think something fishy happens on incongruent where congruent_block
         %is defaulted to 0
-        if length(idx0) > 65 
-            idx0=idx0(end-64:end);
+        if length(idx0) > (numPractice+numTrialsEach) 
+            idx0=idx0(end-(numPractice+numTrialsEach-1):end);
         end
         
-        if length(idx1) > 60 
-            idx1=idx1(end-64:end);
+        if length(idx1) > numPractice+numTrialsEach 
+            idx1=idx1(end-(numPractice+numTrialsEach-1):end);
         end
         
         coh0=d.coherence(idx0);

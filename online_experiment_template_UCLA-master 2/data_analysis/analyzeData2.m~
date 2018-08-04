@@ -73,6 +73,10 @@ cMem=zeros(1,numberOfSubjects);
 cCongMem=zeros(1,numberOfSubjects);
 cInCongMem=zeros(1,numberOfSubjects);
 
+%correct rate on mem task when coherence is during delay
+correctRateCong=zeros(1,numberOfSubjects);
+correctRateInCong=zeros(1,numberOfSubjects);
+
 
 % For loop that loops through all the subjects
 for i = 1:numberOfSubjects
@@ -128,6 +132,10 @@ for i = 1:numberOfSubjects
      %copying remember data
      d.remember(id)=d.remember(id-7);
      [hitRatesMem(i), hitRatesCongMem(i), hitRatesCongMem1(i), hitRatesCongMem2(i), hitRatesInCongMem(i), hitRatesInCongMem1(i), hitRatesInCongMem2(i), faRatesMem(i), faRatesCongMem(i), faRatesCongMem1(i), faRatesCongMem2(i), faRatesInCongMem(i), faRatesInCongMem1(i), faRatesInCongMem2(i), dPMem(i), dPCongMem(i), dPInCongMem(i), cMem(i), cCongMem(i), cInCongMem(i), metadPMem(i) ] = sdAnalyze(d,id,'a','b',true,idConf,2);
+     
+     %looking for differences in correct rates on memory task when no
+     %coherent motion during delay
+     [correctRateCong(i), correctRateInCong(i)] = correctRateMem(d);
 
      
      %who to bonus?
@@ -143,8 +151,8 @@ for i = 1:numberOfSubjects
 
      
      %Keep track of subjects who meet inclusion criteria
-     if hitRatesDet(i) > 0.6 && faRatesDet(i) < 0.4 && hitRatesDet(i) < 0.9 && hitRatesMem(i) > 0.6 && faRatesMem(i) < 0.4
-     %if true
+     %if hitRatesDet(i) > 0.6 && faRatesDet(i) < 0.4 && hitRatesDet(i) < 0.9 && hitRatesMem(i) > 0.6 && faRatesMem(i) < 0.4
+     if faRatesDet(i)
         goodSubjects(end+1)=i;
      end
      
@@ -207,6 +215,7 @@ end
 %for detection task
 graphAveStaircase(forStaircase,'rdk3');
 graphAveStaircaseOld(forStaircase,'rdk3');
+graphAveStaircase(forStaircase,'rdk4');
 
 %for memory task congruent condition
 %graphAveStaircase(forStaircase,'rdk4','angle',1);
@@ -259,9 +268,9 @@ fclose(fileID);
 
 %for bonusing purposes
 fileID2 = fopen('Bonusing.txt','w');
-fprintf(fileID2, 'Assignment ids of people to bonus \n');
+fprintf(fileID2, 'WorkerID,AssignmentID \n');
 for i=1:length(toBonusAssignmentId)
-    fprintf(fileID2,'%s\n',toBonusAssignmentId{i});
+    fprintf(fileID2,'%s,%s\n',toBonusWorkerId{i},toBonusAssignmentId{i});
 end
 fclose(fileID2);
 
@@ -291,21 +300,20 @@ hold off;
 %look at difference in false alarm rates congruent and incongruent trials and
 %see if it correlates with meta-d'
 congruencyEffects=faRatesCongDet-faRatesInCongDet;
-[r,p]=corrcoef(congruencyEffects(goodSubjects),metadPMem(goodSubjects),'Rows','complete');
-
-graphCongruencyEffect(congruencyEffects(goodSubjects),metadPMem(goodSubjects));
-
-r2=corrcoef(congruencyEffects(goodSubjects),abs(metadPMem(goodSubjects)),'Rows','complete');
 
 %look at difference in criteria bias c on congruent and incongruent trials and
 %see if it correlates with meta-d'
-
 congruencyEffects=cCongDet-cInCongDet;
+
+betterSubjects=goodSubjects(metadPMem(goodSubjects)>0);
+
+%metadP
 [r,p]=corrcoef(congruencyEffects(goodSubjects),metadPMem(goodSubjects),'Rows','complete');
+%log(metadP/d')
+graphCongruencyEffect(congruencyEffects(betterSubjects),log(metadPMem(betterSubjects)./dPMem(betterSubjects)));
 
-graphCongruencyEffect(congruencyEffects(goodSubjects),metadPMem(goodSubjects));
-
-r2=corrcoef(congruencyEffects(goodSubjects),abs(metadPMem(goodSubjects)),'Rows','complete');
+forCorr=betterSubjects(~isinf(congruencyEffects(betterSubjects)));
+[r2,p]=corrcoef(congruencyEffects(forCorr),log(metadPMem(forCorr)./dPMem(forCorr)),'Rows','complete');
 
 
 
